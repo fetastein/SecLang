@@ -42,7 +42,7 @@ def eval_query (query, rules)
 
   #define
   set[:X, :X] .si
-puts 'a'
+
   select[:X, cons(:X, :XS), :XS] .si
   select[:X, cons(:Y, :YS), cons(:Y, :ZS)] .si select[:X, :YS, :ZS]
   
@@ -58,21 +58,23 @@ puts 'a'
 
     subSC = rule.subSC
     objSC = rule.objSC
-    p = rule.permission
+    ps = rule.permission
 
-    # puts subSC.thing, subSC.tags
-    # puts objSC.thing, objSC.tags
-    # puts p
+    print "#{subSC.thing}'s tags are #{subSC.tags}.\n"
+    print "#{objSC.thing}'s tags are #{objSC.tags}.\n"
+    print "permission is #{p}\n"
 
 
     context[rule.subSC.thing, subSC.tags] .si
     context[rule.objSC.thing, objSC.tags] .si
+    ps.each{| p|
     can_access[:S, :O, :P] .si \
            set[:P,p],
            context[:S, :SubSC],
            context[:O, :ObjSC],
            selects[subSC.tags, :SubSC],
            selects[objSC.tags, :ObjSC] 
+    }
   ##test
 #     puts '==test'
 #     resolve context[rule.subSC.thing, :X] do |env|
@@ -91,10 +93,10 @@ puts 'a'
 
   can_access[:S, :O, :P] .si \
           set[:P, 'none']
-  print "#{query[0]} and #{query[1]} answer is "
+
 #    print 'permission is '
-    resolve can_access['processA','resource1', :P] do |env|
-      puts env[:P]
+    resolve can_access[query[0],query[1], :P] do |env|
+    print "#{query[0]} can #{env[:P]} #{query[1]}\n" if not env[:P] == 'none'
     end
     print "\n"
 
@@ -129,12 +131,12 @@ context4.tags = cons('conf', [])
 #Rule1
 rule1.objSC = context1
 rule1.subSC = context2 
-rule1.permission = 'read'
+rule1.permission = ['read', 'write']
 
 #Rule2
 rule2.objSC = context3
 rule2.subSC = context4
-rule2.permission = 'write'
+rule2.permission = ['read']
 
 #puts 12
 #can_access = pred 'can_access'
