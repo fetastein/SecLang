@@ -1,0 +1,75 @@
+tag(processA, http).
+tag(resource1, http).
+tag(resource1, conf).
+
+context(processA, [http]).
+context(resource1, [http, conf]).
+
+%context(processB, [conf]).
+%context(resource2, [conf]).
+tag(processB, conf).
+tag(resource2, conf).
+
+%pos([], []).
+%pos([X|L1], [X|L2]) :-
+%            tag(processA, X),
+%	    !,			% X > 0 なら下の規則は調べない
+%	    pos(L1, L2).
+%pos([X|L1], L2) :-		% X > 0 でない場合
+%	    pos(L1, L2).
+%
+%context(Y, []).
+%context(Y, [H | T]) :-
+%		 tag(Y, H),
+%		 context(Y, T).
+
+
+%context(Y, X) :- tag(Y, X).
+	   	      
+%context(Y, [H | T]) :-
+%       tag(Y, H),       
+%       not(member(H, [H | T])), 
+%       context(Y, T).
+      
+
+can_(X, Y, Z) :- 
+	    Z = read,
+	    context(X, SCS),
+	    (member(http, SCS); http == SCS),
+	    context(Y, SCO),
+	    (member(http, SCO); http == SCO).
+
+can_(X, Y, Z) :- 
+	    Z = write,
+	    context(X, SCS),
+	    context(Y, SCO),
+	    (member(http, SCS); http == SCS),
+	    (member(http, SCO); http == SCO).
+
+can_(X, Y, Z) :- 
+	    Z = exec,
+	    context(X, SCS),
+	    context(Y, SCO),
+	    (member(http, SCS); http == SCS),
+	    (member(http, SCO); http == SCO).
+	    
+
+
+can_(X, Y, Z) :- 
+	    Z = read,
+	    context(X, SCS),
+	    context(Y, SCO),
+	    (member(conf, SCS); conf == SCS),
+	    (member(conf, SCO); conf == SCO).
+	   
+can_(X, Y, Z) :- 
+	Z = write,
+	    context(X, SCS),
+	    context(Y, SCO),
+	    (member(conf, SCS); conf == SCS),
+	    (member(conf, SCO); conf == SCO).
+
+can_(X, Y, Z) :-
+	Z = read,
+	context(Y, SCO),
+	(member(conf, SCO); conf == SCO).
