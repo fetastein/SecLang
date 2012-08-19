@@ -1,0 +1,3 @@
+(Nameless)
+
+This language hasn't be named, and is used to write security policy using prolog(first-order predicate logic). It depend on tiny_prolog(http://www.oki-osk.jp/esc/prolog/in-ruby.html). When you use this, 'tiny_prolog.rb' must be in same folder or require path. This works with ruby1.9.2. Other versions of ruby are not tested. Sorry. 
